@@ -40,3 +40,7 @@ Over a recent series of 500,000 blocks, 3346 blocks were missing, a rate of 0.67
 ### Gnosis Chain
 
 Over a series ~1,975,776 blocks since the merge, ~90,000 blocks were missing, a rate of 4.3%. 
+
+### Goerli
+
+Over ~7,405,227 blocks missing since the merge, a rate of 4.2%
