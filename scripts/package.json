@@ -1,0 +1,9 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "Censorship Oracle scripts.",
+  "main": "src/cenorshipOracle.py",
+  "repository": "https://github.com/shotaronowhere/CensorshipOracle/scripts",
+  "license": "MIT",
+  "private": true
+}

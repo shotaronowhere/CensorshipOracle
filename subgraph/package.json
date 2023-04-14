@@ -1,0 +1,9 @@
+{
+  "name": "subgraph",
+  "version": "1.0.0",
+  "description": "Censorship Oracle subgraph.",
+  "main": "index.js",
+  "repository": "https://github.com/shotaronowhere/CensorshipOracle/subgraph",
+  "license": "MIT",
+  "private": true
+}
