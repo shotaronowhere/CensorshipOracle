@@ -1,0 +1,16 @@
+{
+  "name": "censorhip-oracle",
+  "version": "1.0.0",
+  "description": "Forking censorship on-chain oracle for securing optimistic mechanisms (bridges, rollups, economic games).",
+  "main": "contracts/src/censorshipOracle.sol",
+  "repository": "https://github.com/shotaronowhere/CensorshipOracle",
+  "author": "shotaronowhere <shawtarohgn@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "contracts",
+    "subgraph",
+    "frontend",
+    "scripts"
+  ]
+}

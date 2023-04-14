@@ -1,0 +1,12 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "Censorship Oracle Contracts.",
+  "main": "cenorshipOracle.sol",
+  "repository": "https://github.com/shotaronowhere/CensorshipOracle/contracts",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "hardhat": "^2.13.1"
+  }
+}
