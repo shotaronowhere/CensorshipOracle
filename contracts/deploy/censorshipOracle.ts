@@ -12,7 +12,7 @@ const deployCensorshipOracle: DeployFunction = async (hre: HardhatRuntimeEnviron
 
   // ----------------------------------------------------------------------------------------------
   const hardhatDeployer = async () => {
-    const veaOutbox = await deploy("CensorshipOracle", {
+    const CensorshipOracle = await deploy("CensorshipOracle", {
       from: deployer,
       args: [      ],
       log: true,
@@ -21,13 +21,12 @@ const deployCensorshipOracle: DeployFunction = async (hre: HardhatRuntimeEnviron
 
   // ----------------------------------------------------------------------------------------------
   const liveDeployer = async () => {
-    const veaOutbox = await deploy("CensorshipOracle", {
+    const CensorshipOracle = await deploy("CensorshipOracle", {
       from: deployer,
       args: [      ],
       log: true,
     });
   };
-
   // ----------------------------------------------------------------------------------------------
   if (chainId === 31337) {
     await hardhatDeployer();

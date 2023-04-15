@@ -6,7 +6,7 @@ export function handleBlock(block: ethereum.Block): void {
     // special case: hardcoded from yaml
     let n = block.number.toU64()
 
-    if (n == 15537393) {
+    if (n == 25348018) {
         let _lastBlock = new lastBlock(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromU32(7382819))));
         _lastBlock.blockTimestamp = block.timestamp
         _lastBlock.blockNumber = block.number
@@ -22,7 +22,7 @@ export function handleBlock(block: ethereum.Block): void {
         if (_lastBlockNumber < _blockNumber - 1) {
 
             // MISSING BLOCKS : (
-            let expectedBlocksSinceLastBlock = (_blockTimestamp-_lastBlockTimestamp)/12
+            let expectedBlocksSinceLastBlock = (_blockTimestamp-_lastBlockTimestamp)/5
             let actualBlocksSinceLastBlock = _blockNumber - _lastBlockNumber
             let missingBlocks = expectedBlocksSinceLastBlock - actualBlocksSinceLastBlock
 

@@ -10,9 +10,9 @@
 
 pragma solidity ^0.8.19;
 
-import "./interfaces/ICensorshipOracle.sol";
+import "../interfaces/ICensorshipOracle.sol";
 
-contract CensorshipOracle is ICensorshipOracle{
+contract CensorshipOracleEthereum is ICensorshipOracle{
 
     struct Test{
         uint64 startTimestamp;
@@ -23,9 +23,7 @@ contract CensorshipOracle is ICensorshipOracle{
     }
 
     mapping(bytes32 => Test) public tests;
-    // Gnosis Chain 5 seconds
-    // Ethereum 12 seconds
-    uint64 public constant slotTime = 5;
+    uint64 public constant slotTime = 12; // Ethereum slot time 12 seconds
 
 
     /**
@@ -133,9 +131,10 @@ contract CensorshipOracle is ICensorshipOracle{
         (uint64 slots, uint64 maxMissingBlocks) = getPrecalculatedTestParams(inversePercentNoncensoringValidators, inverseConfidenceLevel);
         return (slots * slotTime, maxMissingBlocks);
     }
-    
-    // precalculated test params from scripts/src/censorshipOracle.py
-    // Sensitivity set 50% above current 
+
+    // on aveage, ~%1.5 of blocks are missing due to network latency, validator downtime, etc.
+    // test sensitivity is set at 2% of missing blocks over a minimum duration.
+    // duration is calculated via the scripts in scripts/notebooks/calculate_k_max.ipynb
 
     /**
      * @dev helper function to fetch constant test parameters
@@ -146,31 +145,18 @@ contract CensorshipOracle is ICensorshipOracle{
      ) pure internal returns (uint64 slots, uint64 maxMissingBlocks){
         if (inversePercentNoncensoringValidators == 10){
             if (inverseConfidenceLevel == 1e3){
-                return (uint64(150), uint64(4));
+                return (uint64(150), uint64(4)); // 2.67% missing blocks in 30 minutes
             } else if (inverseConfidenceLevel == 1e6){
-                return (uint64(225), uint64(4));
+                return (uint64(300), uint64(8)); // 2.67% missing blocks in 1 hour
             } else if (inverseConfidenceLevel == 1e9){
-                return (uint64(300), uint64(3));
+                return (uint64(450), uint64(11)); // 2.44% missing blocks in 1 hour 30 minutes
             } else if (inverseConfidenceLevel == 1e12){
-                return (uint64(450), uint64(7));
+                return (uint64(600), uint64(15)); // 2.5% missing blocks in 2 hours
             } else if (inverseConfidenceLevel == 1e24){
-                return (uint64(1200), uint64(29));
+                return (uint64(1200), uint64(29)); // 2.42% missing blocks in 4 hours
             } 
-        } else if (inversePercentNoncensoringValidators == 100){
-            if (inverseConfidenceLevel == 1e3){
-                return (uint64(14400), uint64(108));
-            } else if (inverseConfidenceLevel == 1e6){
-                return (uint64(225), uint64(4));
-            } else if (inverseConfidenceLevel == 1e9){
-                return (uint64(300), uint64(3));
-            } else if (inverseConfidenceLevel == 1e12){
-                return (uint64(450), uint64(7));
-            } else if (inverseConfidenceLevel == 1e24){
-                return (uint64(1200), uint64(29));
-            } 
+        }
 
         return(type(uint64).max, 0);
-
-        }
     }
 }
