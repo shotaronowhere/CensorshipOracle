@@ -1,0 +1,23 @@
+specVersion: 0.0.5
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: CensorshipOracle
+    network: goerli
+    source:
+      address: "0xFa546AAc8AbffE52Ff7F06C55717CB854dBf62EC"
+      abi: CensorshipOracle
+      startBlock: 15537393
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Block
+      abis:
+        - name: CensorshipOracle
+          file: CensorshipOracle/abis/CensorshipOracle.json
+      blockHandlers:
+        - handler: handleBlock
+      file: CensorshipOracle/CensorshipOracle.wasm

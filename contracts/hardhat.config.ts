@@ -1,11 +1,14 @@
 import { HardhatUserConfig, task } from "hardhat/config";
+import "hardhat-deploy";
+import "hardhat-deploy-ethers";
+import * as dotenv from "dotenv";
 
-module.exports = {
-  solidity: "0.8.18",
-};
+dotenv.config();
+
+
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.9",
+    version: "0.8.19",
     settings: {
       optimizer: {
         enabled: true,
@@ -17,6 +20,13 @@ const config: HardhatUserConfig = {
     sources: "./src",
   },
   networks: {
+    goerli: {
+      chainId: 5,
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      live: true,
+      saveDeployments: true,
+    },
     chiado: {
       chainId: 10200,
       url: "https://rpc.chiadochain.net",
@@ -24,3 +34,5 @@ const config: HardhatUserConfig = {
     }
   }
 }
+
+export default config;

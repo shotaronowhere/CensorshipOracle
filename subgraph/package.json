@@ -5,5 +5,18 @@
   "main": "index.js",
   "repository": "https://github.com/shotaronowhere/CensorshipOracle/subgraph",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ shotaronowhere/censorship-oracle",
+    "create-local": "graph create --node http://localhost:8020/ shotaronowhere/censorship-oracle",
+    "remove-local": "graph remove --node http://localhost:8020/ shotaronowhere/censorship-oracle",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 shotaronowhere/censorship-oracle",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.46.1",
+    "@graphprotocol/graph-ts": "^0.29.3"
+  }
 }
