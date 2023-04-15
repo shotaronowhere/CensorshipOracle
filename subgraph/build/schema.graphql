@@ -1,4 +1,13 @@
-type Block @entity(immutable: true) {
+type blockRange @entity(immutable: true) {
+  id: Bytes!
+  blockNumberLow: BigInt!
+  blockNumberHigh: BigInt!
+  blockTimestampLow: BigInt!
+  blockTimestampHigh: BigInt!
+  missingBlocks: BigInt!
+}
+
+type lastBlock @entity(immutable: false) {
   id: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!

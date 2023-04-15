@@ -11,7 +11,7 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class Block extends Entity {
+export class blockRange extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -19,18 +19,99 @@ export class Block extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Block entity without an ID");
+    assert(id != null, "Cannot save blockRange entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type Block must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type blockRange must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Block", id.toBytes().toHexString(), this);
+      store.set("blockRange", id.toBytes().toHexString(), this);
     }
   }
 
-  static load(id: Bytes): Block | null {
-    return changetype<Block | null>(store.get("Block", id.toHexString()));
+  static load(id: Bytes): blockRange | null {
+    return changetype<blockRange | null>(
+      store.get("blockRange", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get blockNumberLow(): BigInt {
+    let value = this.get("blockNumberLow");
+    return value!.toBigInt();
+  }
+
+  set blockNumberLow(value: BigInt) {
+    this.set("blockNumberLow", Value.fromBigInt(value));
+  }
+
+  get blockNumberHigh(): BigInt {
+    let value = this.get("blockNumberHigh");
+    return value!.toBigInt();
+  }
+
+  set blockNumberHigh(value: BigInt) {
+    this.set("blockNumberHigh", Value.fromBigInt(value));
+  }
+
+  get blockTimestampLow(): BigInt {
+    let value = this.get("blockTimestampLow");
+    return value!.toBigInt();
+  }
+
+  set blockTimestampLow(value: BigInt) {
+    this.set("blockTimestampLow", Value.fromBigInt(value));
+  }
+
+  get blockTimestampHigh(): BigInt {
+    let value = this.get("blockTimestampHigh");
+    return value!.toBigInt();
+  }
+
+  set blockTimestampHigh(value: BigInt) {
+    this.set("blockTimestampHigh", Value.fromBigInt(value));
+  }
+
+  get missingBlocks(): BigInt {
+    let value = this.get("missingBlocks");
+    return value!.toBigInt();
+  }
+
+  set missingBlocks(value: BigInt) {
+    this.set("missingBlocks", Value.fromBigInt(value));
+  }
+}
+
+export class lastBlock extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save lastBlock entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type lastBlock must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("lastBlock", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): lastBlock | null {
+    return changetype<lastBlock | null>(
+      store.get("lastBlock", id.toHexString())
+    );
   }
 
   get id(): Bytes {
