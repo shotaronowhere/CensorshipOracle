@@ -1,4 +1,29 @@
-# CensorshipOracle
+# O-Hashi
+
+An optimistic hash bridge for Ethereum and Gnosis which fallsback on the security of the Gnosis [Hashi](https://github.com/gnosis/hashi) bridge aggregator. Optimistic hash claims are accepted as long as the on-chain censorship oracle test passes!
+
+We built a forking censorship oracle for Gnosis chain and Ethereum to speed up the settlement of optimistic rollups and optimistic bridging.
+
+Ontop of the censorship oracle, we built an optimistic hash bridge ontop of Hashi. Hash claims are accepted if the censorship oracle test passes, otherwise, we fallback on Hashi regardless if there is a challenge or not.
+
+# O-Hashi x Censorship Oracle
+
+The censorship oracle is based on an eth research forum post made last month by Ed Felten, the chief scientist at Arbitrum. In the post (https://ethresear.ch/t/reducing-challenge-times-in-rollups/14997), Ed proposes a statistical test to determine censorship using on-chain information in block headers alone. The test is based on ethereum consensus mechanisms, and as Ed suggests, can speed up optimistic systems.
+
+We implement Ed's spec and create an optimistic hash bridge called O-Hashi integrating our censorship oracle and Gnosis' Hashi bridge to resolve disputes. Here's how O-Hashi works,
+
+1. Anyone can make a claim about a hash by leaving a deposit, and automatically starting a censorship test in the censorship oracle.
+
+2.
+
+a) Anyone can challenge the claim by leaving a deposit. We call the Gnosis Hashi bridge to resolve the challenge bridging the true hash securely. If Hashi never responds, we refund both the claimant and the challenger, and no hash is validated.
+
+OR
+
+b) After the challenge period elapses, the claim can be optimistically accepted if the censorship test passes. If the censorship test fails, Hashi is called to validate the hash.
+
+# Censorship Oracle
+
 Proof of Stake Censorship Oracle
 
 ## Background
