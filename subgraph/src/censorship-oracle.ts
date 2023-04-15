@@ -11,7 +11,7 @@ export function handleBlock(block: ethereum.Block): void {
         _lastBlock.blockTimestamp = block.timestamp
         _lastBlock.blockNumber = block.number
         _lastBlock.save()
-    } else if (n % 15537393 == 0){
+    } else if (n % 7200 == 0){
         let _lastBlock = lastBlock.load(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromU32(7382819))));
 
         let _lastBlockTimestamp = _lastBlock!.blockTimestamp.toU64()
