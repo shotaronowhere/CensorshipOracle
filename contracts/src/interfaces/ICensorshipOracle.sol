@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 interface ICensorshipOracle {
+
     function testParameters(
         uint64 percentNoncensoringValidators,
         uint64 inverseConfidenceLevel
@@ -25,5 +26,7 @@ interface ICensorshipOracle {
         uint64,  // test result available timestamp
         bool,    // test has finished
         bool     // (test has finished) && (non-censored block was included)
-        );
+    );
+
+    
 }
