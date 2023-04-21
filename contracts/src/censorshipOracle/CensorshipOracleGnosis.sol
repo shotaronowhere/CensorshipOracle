@@ -16,6 +16,7 @@ contract CensorshipOracleGnosis is ICensorshipOracle{
 
     struct Test{
         uint64 startTimestamp;
+        uint32 startBlockNumber;
         uint64 resultAvailableTimestamp;
         uint64 maxMissingBlocks;
         bool finished;
@@ -23,7 +24,7 @@ contract CensorshipOracleGnosis is ICensorshipOracle{
     }
 
     mapping(bytes32 => Test) public tests;
-    uint64 public constant slotTime = 5; // Gnosis chain slot time 5 seconds
+    uint64 public constant slotTime = 5; // Gnosis slot time 12 seconds
 
 
     /**
@@ -49,6 +50,7 @@ contract CensorshipOracleGnosis is ICensorshipOracle{
 
         tests[testId] = Test({
             startTimestamp: uint64(block.timestamp),
+            startBlockNumber: uint32(block.number),
             resultAvailableTimestamp: uint64(block.timestamp + duration),
             maxMissingBlocks: uint64(maxMissingBlocks),
             finished: false,
@@ -112,9 +114,10 @@ contract CensorshipOracleGnosis is ICensorshipOracle{
 
         test.finished = true;
 
-        uint64 missingBlocks = uint64(block.number) - (uint64(block.timestamp) - test.startTimestamp) / slotTime;
+        uint64 actualBlocksSinceTestStarted = uint64(block.number) - test.startBlockNumber;
+        uint64 expectedBlocksSinceTestStarted = (uint64(block.timestamp) - test.startTimestamp) / slotTime;
 
-        if (missingBlocks <= test.maxMissingBlocks){
+        if (test.maxMissingBlocks <= expectedBlocksSinceTestStarted - actualBlocksSinceTestStarted){
             test.passed = true;
         }
 
