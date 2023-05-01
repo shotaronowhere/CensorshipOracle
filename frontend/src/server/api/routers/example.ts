@@ -25,7 +25,7 @@ export const exampleRouter = createTRPCRouter({
           `
         });
         
-        console.log(response.data.data.blockRanges)
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
         return response.data.data.blockRanges;
       } 
       catch (error) {

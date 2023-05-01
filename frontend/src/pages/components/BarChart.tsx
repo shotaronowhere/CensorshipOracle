@@ -7,11 +7,17 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarEle
 
   // Expect to be 720 data points per month, 24 per day
 const formatToDailyChart = (dataset: BlockRange[]) => {
+ 
+  if (!dataset || dataset.length === 0) {
+    return {
+      data: [],
+      labels: []
+    }
+  }
 
   const labels : string[]= []
   const data: number[] = []
 
-  console.log("Dataset", dataset)
   const sortedDataset = dataset.sort((a, b) => Number(a.blockTimestampHigh) - Number(b.blockTimestampHigh))
 
   // Convert each 24 items into a day data point
@@ -19,9 +25,6 @@ const formatToDailyChart = (dataset: BlockRange[]) => {
     const temp = i + 24 < dataset.length
       ? dataset.slice(i, i+24)
       : dataset.slice(i)
-
-    console.log("Index", i)
-    console.log("Temp", temp)
 
     const missingBlocksIn24Hours = temp.reduce(
       (accumulator, currentBlockRange) => accumulator + Number(currentBlockRange.missingBlocks),
@@ -31,18 +34,10 @@ const formatToDailyChart = (dataset: BlockRange[]) => {
     const timestampLow = Number(temp[0]?.blockTimestampLow)
     const timestampHigh = Number(temp[temp.length - 1]?.blockTimestampHigh)
 
-    console.log("Missing Blocks in 24 hours", missingBlocksIn24Hours)
-    console.log("Timestamp Low", timestampLow)
-    console.log("Timestamp High", timestampHigh)
-    console.log("Timestamp diff", timestampHigh - timestampLow)
-
     // Percentage of missing blocks in 24 hours
     data.push(missingBlocksIn24Hours / ((timestampHigh - timestampLow) / 12) * 100)
     labels.push(new Date(timestampLow * 1000).toLocaleDateString())
   }
-
-  console.log("Data: ", data)
-  console.log("Labels: ", labels)
 
   return {
     data,
@@ -70,8 +65,10 @@ const BarChart = (props : IBarChartProps) => {
 
   return (
     <div className="w-3/4 block">
-      {/* <h1 className="text-xl"> Missing blocks </h1> */}
-      <Bar data={chartData} />
+      { data.length === 0 && labels.length === 0
+          ? "Unable to load data"
+          : <Bar data={chartData} />
+      }
     </div>
   )
 }
