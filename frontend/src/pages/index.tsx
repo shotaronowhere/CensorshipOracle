@@ -6,7 +6,7 @@ import Accordion from "./components/Accordion";
 import SocialsFooter from "./components/SocialFooter";
 
 const Home: NextPage = () => {
-  const dataset = api.example.mock.useQuery({ text: "from tRPC" });
+  const dataset = api.example.getSubgraphData.useQuery({ datasetSize: 720, orderByProperty: 'blockNumberHigh', orderDirection: 'desc' });
   return (
     <>
       <Head>
@@ -22,17 +22,17 @@ const Home: NextPage = () => {
           <div className="text-2xl text-center w-3/4">
             <p>Ethereum is censorship resistant . . . r-right?</p>
           </div>
-  
-          <p className="text-xl text-white">
-            {dataset.data ? dataset.data.data.length : "Loading tRPC query..."}
-          </p>
 
           <div className="w-full flex justify-center">
             <div>% Missing Blocks</div>
           </div>
 
           <div className="w-full flex justify-center">
-            <BarChart/>
+            {dataset.data
+              ? <BarChart dataset={dataset.data}/>
+              : "Chart Loading..."
+            }
+            
           </div>
 
         
