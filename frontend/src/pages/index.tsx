@@ -6,7 +6,7 @@ import Accordion from "./components/Accordion";
 import SocialsFooter from "./components/SocialFooter";
 
 const Home: NextPage = () => {
-  const dataset = api.example.mock.useQuery({ text: "from tRPC" });
+  const dataset = api.example.getSubgraphData.useQuery({ datasetSize: 720, orderByProperty: 'blockNumberHigh', orderDirection: 'desc' });
   return (
     <>
       <Head>
@@ -22,17 +22,17 @@ const Home: NextPage = () => {
           <div className="text-2xl text-center w-3/4">
             <p>Ethereum is censorship resistant . . . r-right?</p>
           </div>
-  
-          <p className="text-xl text-white">
-            {dataset.data ? dataset.data.data.length : "Loading tRPC query..."}
-          </p>
 
           <div className="w-full flex justify-center">
             <div>% Missing Blocks</div>
           </div>
 
           <div className="w-full flex justify-center">
-            <BarChart/>
+            {dataset.data
+              ? <BarChart dataset={dataset.data}/>
+              : "Chart Loading..."
+            }
+            
           </div>
 
         
@@ -40,9 +40,9 @@ const Home: NextPage = () => {
 
           <div className="container mx-auto px-4 py-8">
             <Accordion title="How can blocks go missing?">
-              <p>On Ethereum and Gnosis chain, blocks are produced like clockwork. Every 12 seconds (5 on Gnosis), a block can be produced.
+              <p>On Ethereum and Gnosis chain, blocks are produced like clockwork. Every 12 seconds (5 on Gnosis), a block can be produced. <br></br><br></br>
                 However if validators are offline, blocks may go missing.
-<br></br>There may also be sophisticated network level <a className="underline text-blue-500" href="https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/attack-and-defense/#reorgs" rel="noreferrer">
+<br></br><br></br>There may also be sophisticated network level <a className="underline text-blue-500" href="https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/attack-and-defense/#reorgs" rel="noreferrer">
   attacks</a> such as eclipse attacks which fork out proposed blocks, resulting in block reorganizations.</p>
             </Accordion>
             <Accordion title="How does censorship affect rollups and dapps?">
@@ -50,16 +50,16 @@ const Home: NextPage = () => {
             </Accordion>
             <Accordion title="What's the purpose of a censorship oracle?">
               <p>To avoid censorship, optimistic rollups use a 7 day challenge period. This means any messages or withdrawals from the rollup incurs a latency of 7 days.
-
+              <br></br><br></br>
 With a censorship oracle we can speed up the challenge window to hours instead of days</p>
             </Accordion>
             <Accordion title="How does the censorship oracle work?">
               <p>
               The censorship oracle is based on a ethereum research forum <a className="underline text-blue-500" href="https://ethresear.ch/t/reducing-challenge-times-in-rollups/14997" rel="noreferrer">
   post</a> by Ed Felten.
-<br></br>
+<br></br> <br></br>
 The idea is that there is enough information on-chain to determine statistically whether forking censorship occured.
-<br></br>
+<br></br> <br></br>
 For example, if we assume 10% of validators do not censor transactions, and if fewer than 4 blocks are missing over a 2 hour time period, then we know the risk of censorship is 1 in a million chance.
               </p>
             </Accordion>
