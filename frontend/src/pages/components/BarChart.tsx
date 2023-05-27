@@ -1,12 +1,12 @@
 import React from "react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement} from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, TimeScale, LinearScale, BarElement, LineElement, PointElement} from "chart.js";
+import { Scatter } from "react-chartjs-2";
+import 'chartjs-adapter-moment';
 import { type BlockRange} from "../../types"
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, TimeScale, BarElement, LineElement, PointElement);
 
-  // Expect to be 720 data points per month, 24 per day
-const formatToDailyChart = (dataset: BlockRange[]) => {
+const formatToDailyChart = (is30days: boolean, chainid: number, dataset: BlockRange[]) => {
  
   if (!dataset || dataset.length === 0) {
     return {
@@ -16,27 +16,42 @@ const formatToDailyChart = (dataset: BlockRange[]) => {
   }
 
   const labels : string[]= []
-  const data: number[] = []
+  const data: {x: number, y: number}[] = []
 
-  const sortedDataset = dataset.sort((a, b) => Number(a.blockTimestampHigh) - Number(b.blockTimestampHigh))
 
-  // Convert each 24 items into a day data point
-  for (let i=0; i<sortedDataset.length; i+=24) {
-    const temp = i + 24 < dataset.length
-      ? dataset.slice(i, i+24)
-      : dataset.slice(i)
+  if (is30days){
+    const total = chainid === 100 ? 70 : 30
+    for (let i=dataset.length-1; i>dataset.length-total; i--) {
+      const tsLow = Number(dataset[i]?.blockTimestampLow)
+      const tsHigh = Number(dataset[i]?.blockTimestampHigh)
+      const blockNumberLow = Number(dataset[i]?.blockNumberLow)
+      const blockNumberHigh = Number(dataset[i]?.blockNumberHigh)
+      const missingBlocks = Number(dataset[i]?.missingBlocks)
+      // Percentage of missing blocks in 24 hours
+      data.push({x: (tsHigh + tsLow)*1000/2, y: missingBlocks / (blockNumberHigh - blockNumberLow + missingBlocks) * 100})
+    }
+  } else {
+    const sortedDataset = dataset.sort((a, b) => Number(a.blockTimestampHigh) - Number(b.blockTimestampHigh))
+    const pointsperday = chainid === 100 ? 14 : 7
+    // Convert each pointsperday items into a day data point
+    for (let i=0; i<sortedDataset.length; i+=pointsperday) {
+      const temp = i + pointsperday < dataset.length
+        ? sortedDataset.slice(i, i+pointsperday)
+        : sortedDataset.slice(i)
 
-    const missingBlocksIn24Hours = temp.reduce(
-      (accumulator, currentBlockRange) => accumulator + Number(currentBlockRange.missingBlocks),
-      0
-    )
+      const missingBlocks = temp.reduce(
+        (accumulator, currentBlockRange) => accumulator + Number(currentBlockRange.missingBlocks),
+        0
+      )
 
-    const timestampLow = Number(temp[0]?.blockTimestampLow)
-    const timestampHigh = Number(temp[temp.length - 1]?.blockTimestampHigh)
+      const tsLow = Number(temp[0]?.blockTimestampLow)
+      const tsHigh = Number(temp[temp.length - 1]?.blockTimestampHigh)
+      const blockNumberLow = Number(temp[0]?.blockNumberLow)
+      const blockNumberHigh = Number(temp[temp.length - 1]?.blockNumberHigh)
 
-    // Percentage of missing blocks in 24 hours
-    data.push(missingBlocksIn24Hours / ((timestampHigh - timestampLow) / 12) * 100)
-    labels.push(new Date(timestampLow * 1000).toLocaleDateString())
+      // Percentage of missing blocks in 24 hours
+      data.push({x: (tsHigh + tsLow)*1000/2, y: missingBlocks / (blockNumberHigh - blockNumberLow + missingBlocks) * 100})
+    }
   }
 
   return {
@@ -46,28 +61,63 @@ const formatToDailyChart = (dataset: BlockRange[]) => {
 }
 
 interface IBarChartProps {
-  dataset: BlockRange[]
+  freq: number,
+  testnet: boolean,
+  dataset_eth: BlockRange[],
+  dataset_gnosis: BlockRange[]
 }
 
 const BarChart = (props : IBarChartProps) => {
-  const { data, labels } = formatToDailyChart(props.dataset)
+  const dailychartdata = formatToDailyChart(props.freq !=7,props.testnet? 5: 1, props.dataset_eth);
+  const data_eth = dailychartdata.data
+  const dailychartdata_gnosis = formatToDailyChart(props.freq !=7,props.testnet? 10200: 100, props.dataset_gnosis)
+  const data_gnosis = dailychartdata_gnosis.data
+
   const chartData = {
-    labels: labels,
     datasets: [
+
       {
-        label: "Ethereum",
-        backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(255, 99, 132)",
-        data: data ,
-      }
+        label: props.testnet? "Chiado": "Gnosis",
+        backgroundColor: "rgb(0, 102, 51)",
+        borderColor: "rgb(0, 102, 51)",
+        data: data_gnosis ,
+        showLine: true,
+        xAxisID: 'x1',
+        yAxisID: 'y1'
+      },{
+        label: props.testnet? "Goerli": "Ethereum",
+        backgroundColor: "rgb(0, 0, 0)",
+        borderColor: "rgb(0, 0, 0)",
+        data: data_eth ,
+        showLine: true,
+        xAxisID: 'x1',
+        yAxisID: 'y1'
+      },
     ],
   }
 
+  const options = {
+    scales: {
+      x1: {
+        type: 'time',
+        title: {
+          display: true,
+        },
+      },
+        y1: {
+          title: {
+            display: true,
+            text: 'Missing Blocks [%]'
+          }
+        }
+    },
+   }
+
   return (
     <div className="w-3/4 block">
-      { data.length === 0 && labels.length === 0
+      { data_eth.length === 0
           ? "Unable to load data"
-          : <Bar data={chartData} />
+          : <Scatter options={options} data={chartData} />
       }
     </div>
   )
