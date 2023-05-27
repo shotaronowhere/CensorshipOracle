@@ -99,7 +99,6 @@ const BarChart = (props : IBarChartProps) => {
   const options = {
     scales: {
       x1: {
-        type: 'time',
         title: {
           display: true,
         },
