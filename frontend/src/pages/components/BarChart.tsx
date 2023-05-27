@@ -1,5 +1,5 @@
 import React from "react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, TimeScale, LinearScale, BarElement, LineElement, PointElement} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, TimeScale, LinearScale, BarElement, LineElement, ChartOptions, PointElement} from "chart.js";
 import { Scatter } from "react-chartjs-2";
 import 'chartjs-adapter-moment';
 import { type BlockRange} from "../../types"
@@ -99,6 +99,7 @@ const BarChart = (props : IBarChartProps) => {
   const options = {
     scales: {
       x1: {
+        type: 'time',
         title: {
           display: true,
         },
@@ -116,7 +117,7 @@ const BarChart = (props : IBarChartProps) => {
     <div className="w-3/4 block">
       { data_eth.length === 0
           ? "Unable to load data"
-          : <Scatter options={options} data={chartData} />
+          : <Scatter options={options as ChartOptions} data={chartData} />
       }
     </div>
   )
