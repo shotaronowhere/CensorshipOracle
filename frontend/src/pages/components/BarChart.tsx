@@ -97,6 +97,8 @@ const BarChart = (props : IBarChartProps) => {
   }
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x1: {
         type: 'time',
@@ -117,7 +119,7 @@ const BarChart = (props : IBarChartProps) => {
     <div className="w-3/4 block">
       { data_eth.length === 0
           ? "Unable to load data"
-          : <Scatter options={options as ChartOptions} data={chartData} />
+          : <div id="canvas-container"><Scatter options={options as ChartOptions} data={chartData} /></div>
       }
     </div>
   )
