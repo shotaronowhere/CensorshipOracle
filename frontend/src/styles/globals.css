@@ -10,7 +10,9 @@
 
  @media (min-width: 768px) {
      #canvas-container {
-         height: auto;
-         width: auto;
+        height: 60vh;
+    width: 80vw;
+    position: relative;
+    left: -150px;
       }
  }
