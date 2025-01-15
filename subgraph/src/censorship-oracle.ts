@@ -4,8 +4,10 @@ import { ethereum, Bytes, BigInt } from '@graphprotocol/graph-ts'
 export function handleBlock(block: ethereum.Block): void {
     // special case: hardcoded from yaml
     let n = block.number.toU64()
+    let blocktime = 12
+    let blocksInDay = 86400/blocktime
 
-    if (n == 25349465) {
+    if (n == 15537393) {
         let _lastBlock = new lastBlock(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromU32(1))));
         _lastBlock.blockTimestamp = block.timestamp
         _lastBlock.blockNumber = block.number
@@ -17,29 +19,29 @@ export function handleBlock(block: ethereum.Block): void {
         return;
     } 
     // day
-    if (n % 17280 == 0){
+    if (n % blocksInDay == 0){
         let _lastBlock = lastBlock.load(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromU32(1))));
         let _blockRange = new blockRange(Bytes.fromByteArray(Bytes.fromU64(_lastBlock!.blockNumber.toU64())));
         _blockRange.isDay = true
-        updateBlockRange(_lastBlock!, _blockRange, block)
+        updateBlockRange(_lastBlock!, _blockRange, block, blocktime)
     }
     // month
-    if (n % 518400 == 0){
+    if (n % (30*blocksInDay) == 0){
         let lastBlockMonth = lastBlock.load(Bytes.fromByteArray(Bytes.fromBigInt(BigInt.fromU32(2))));
         let blockRangeMonth = new blockRange(Bytes.fromByteArray(Bytes.fromU64(lastBlockMonth!.blockTimestamp.toU64())));
         blockRangeMonth.isDay = false
-        updateBlockRange(lastBlockMonth!, blockRangeMonth, block)
+        updateBlockRange(lastBlockMonth!, blockRangeMonth, block, blocktime)
     }
 }
 
-function updateBlockRange(lastBlock: lastBlock, blockRange: blockRange, block: ethereum.Block): void {
+function updateBlockRange(lastBlock: lastBlock, blockRange: blockRange, block: ethereum.Block, blocktime: u64): void {
     let _lastBlockTimestamp = lastBlock!.blockTimestamp.toU64()
     let _lastBlockNumber = lastBlock!.blockNumber.toU64()
     let _blockTimestamp = block.timestamp.toU64()
     let _blockNumber = block.number.toU64()
 
     // MISSING BLOCKS : (
-    let expectedBlocksSinceLastBlock = (_blockTimestamp-_lastBlockTimestamp)/5
+    let expectedBlocksSinceLastBlock = (_blockTimestamp-_lastBlockTimestamp)/blocktime
     let actualBlocksSinceLastBlock = _blockNumber - _lastBlockNumber
     let missingBlocks = expectedBlocksSinceLastBlock - actualBlocksSinceLastBlock
 

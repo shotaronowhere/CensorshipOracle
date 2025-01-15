@@ -1,14 +1,15 @@
 import React from "react";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement} from "chart.js";
-import { Bar } from "react-chartjs-2";
-import { type BlockRange} from "../../types"
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, TimeScale, LinearScale, BarElement, LineElement, ChartOptions, PointElement} from "chart.js";
+import { Scatter } from "react-chartjs-2";
+import 'chartjs-adapter-moment';
+import { type SubgraphData} from "../../types"
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, LineElement, PointElement);
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, TimeScale, BarElement, LineElement, PointElement);
 
-  // Expect to be 720 data points per month, 24 per day
-const formatToDailyChart = (dataset: BlockRange[]) => {
- 
-  if (!dataset || dataset.length === 0) {
+const formatToDailyChart = (isDay: boolean, dataset: SubgraphData) => {
+ console.log(dataset)
+ console.log('yoyoyo')
+  if (!dataset || dataset.blockRangeDaily.length === 0) {
     return {
       data: [],
       labels: []
@@ -16,27 +17,15 @@ const formatToDailyChart = (dataset: BlockRange[]) => {
   }
 
   const labels : string[]= []
-  const data: number[] = []
+  const data: {x: number, y: number}[] = []
 
-  const sortedDataset = dataset.sort((a, b) => Number(a.blockTimestampHigh) - Number(b.blockTimestampHigh))
+  const dataMap = isDay ? dataset.blockRangeDaily : dataset.blockRangeMonthly
 
-  // Convert each 24 items into a day data point
-  for (let i=0; i<sortedDataset.length; i+=24) {
-    const temp = i + 24 < dataset.length
-      ? dataset.slice(i, i+24)
-      : dataset.slice(i)
-
-    const missingBlocksIn24Hours = temp.reduce(
-      (accumulator, currentBlockRange) => accumulator + Number(currentBlockRange.missingBlocks),
-      0
-    )
-
-    const timestampLow = Number(temp[0]?.blockTimestampLow)
-    const timestampHigh = Number(temp[temp.length - 1]?.blockTimestampHigh)
-
+  for (let i=0; i<dataMap.length; i++) {
+    const tsHigh = Number(dataMap[i]?.blockTimestampHigh)
+    const percentMissing = Number(dataMap[i]?.percentMissing)/100
     // Percentage of missing blocks in 24 hours
-    data.push(missingBlocksIn24Hours / ((timestampHigh - timestampLow) / 12) * 100)
-    labels.push(new Date(timestampLow * 1000).toLocaleDateString())
+    data.push({x: tsHigh * 1000, y: percentMissing})
   }
 
   return {
@@ -46,28 +35,64 @@ const formatToDailyChart = (dataset: BlockRange[]) => {
 }
 
 interface IBarChartProps {
-  dataset: BlockRange[]
+  isDay: boolean,
+  dataset_eth: SubgraphData,
+  dataset_gnosis: SubgraphData
 }
 
 const BarChart = (props : IBarChartProps) => {
-  const { data, labels } = formatToDailyChart(props.dataset)
+  const dailychartdata = formatToDailyChart(props.isDay, props.dataset_eth);
+  const data_eth = dailychartdata.data
+  const dailychartdata_gnosis = formatToDailyChart(props.isDay, props.dataset_gnosis)
+  const data_gnosis = dailychartdata_gnosis.data
+
   const chartData = {
-    labels: labels,
     datasets: [
+
       {
+        label: "Gnosis",
+        backgroundColor: "rgb(0, 102, 51)",
+        borderColor: "rgb(0, 102, 51)",
+        data: data_gnosis ,
+        showLine: true,
+        xAxisID: 'x1',
+        yAxisID: 'y1'
+      },{
         label: "Ethereum",
-        backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(255, 99, 132)",
-        data: data ,
-      }
+        backgroundColor: "rgb(0, 0, 0)",
+        borderColor: "rgb(0, 0, 0)",
+        data: data_eth ,
+        showLine: true,
+        xAxisID: 'x1',
+        yAxisID: 'y1'
+      },
     ],
   }
 
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x1: {
+        type: 'time',
+        title: {
+          display: true,
+        },
+      },
+        y1: {
+          title: {
+            display: true,
+            text: 'Missing Blocks [%]'
+          }
+        }
+    },
+   }
+
   return (
     <div className="w-3/4 block">
-      { data.length === 0 && labels.length === 0
+      { data_eth.length === 0
           ? "Unable to load data"
-          : <Bar data={chartData} />
+          : <div id="canvas-container"><Scatter options={options as ChartOptions} data={chartData} /></div>
       }
     </div>
   )
