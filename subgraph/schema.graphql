@@ -1,9 +1,11 @@
 type blockRange @entity(immutable: true) {
   id: Bytes!
+  isDay: Boolean!
   blockNumberLow: BigInt!
   blockNumberHigh: BigInt!
   blockTimestampLow: BigInt!
   blockTimestampHigh: BigInt!
+  percentMissing: BigInt! # in basis points
   missingBlocks: BigInt!
 }
 

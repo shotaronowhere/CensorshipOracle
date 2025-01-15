@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+#canvas-container {
+    height: 60vh;
+    width: 90vw;
+    position: relative;
+    left: -50px;
+ }
+
+ @media (min-width: 768px) {
+     #canvas-container {
+        height: 60vh;
+    width: 80vw;
+    position: relative;
+    left: -150px;
+      }
+ }

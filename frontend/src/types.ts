@@ -1,8 +1,14 @@
 export type BlockRange = {
     id: string
-    missingBlocks: string
-    blockNumberLow: string
-    blockNumberHigh: string
-    blockTimestampLow: string
-    blockTimestampHigh: string
+    missingBlocks: number
+    percentMissing: number
+    blockNumberLow: number
+    blockNumberHigh: number
+    blockTimestampLow: number
+    blockTimestampHigh: number
+  }
+
+  export type SubgraphData = {
+    blockRangeDaily: BlockRange[]
+    blockRangeMonthly: BlockRange[]
   }
